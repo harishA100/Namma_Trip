@@ -4,6 +4,62 @@ import { useAuth } from '../context/AuthContext';
 import { Eye, EyeOff, Loader2, Star, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+/* ── Register Left Panel Components ──────────────────────────────────────── */
+const FeatureCard = ({ icon, title, desc, delay }: any) => (
+  <motion.div
+    initial={{ opacity: 0, y: 16 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay }}
+    whileHover={{ y: -3, boxShadow: '0 16px 40px rgba(0,0,0,0.1)' }}
+    style={{
+      flex: 1,
+      background: 'rgba(255,255,255,0.7)',
+      backdropFilter: 'blur(12px)',
+      borderRadius: '18px',
+      padding: '18px 16px',
+      border: '1px solid rgba(255,255,255,0.9)',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+      display: 'flex', flexDirection: 'column', gap: '8px',
+      cursor: 'default', transition: 'box-shadow 0.25s, transform 0.25s',
+    }}
+  >
+    <div style={{ fontSize: '24px', marginBottom: '2px' }}>{icon}</div>
+    <div style={{ fontSize: '13px', fontWeight: 800, color: '#111827' }}>{title}</div>
+    <div style={{ fontSize: '11.5px', color: '#6B7280', lineHeight: 1.5 }}>{desc}</div>
+  </motion.div>
+);
+
+const GlassBadge = ({ icon, label, sub, style, delay }: any) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.85 }}
+    animate={{ opacity: 1, scale: 1, y: [0, -5, 0] }}
+    transition={{
+      opacity: { duration: 0.4, delay },
+      scale: { duration: 0.4, delay },
+      y: { duration: 3.5 + delay, repeat: Infinity, ease: 'easeInOut', delay: delay * 0.5 },
+    }}
+    style={{
+      position: 'absolute',
+      background: 'rgba(255,255,255,0.88)',
+      backdropFilter: 'blur(14px)',
+      borderRadius: '14px',
+      padding: '9px 14px',
+      boxShadow: '0 6px 28px rgba(0,0,0,0.09)',
+      border: '1px solid rgba(255,255,255,0.7)',
+      display: 'flex', alignItems: 'center', gap: '9px',
+      zIndex: 20,
+      whiteSpace: 'nowrap',
+      ...style,
+    }}
+  >
+    <span style={{ fontSize: '18px' }}>{icon}</span>
+    <div>
+      <div style={{ fontSize: '12px', fontWeight: 800, color: '#111827', lineHeight: 1.2 }}>{label}</div>
+      <div style={{ fontSize: '10px', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{sub}</div>
+    </div>
+  </motion.div>
+);
+
 /* ── Shared icons ─────────────────────────────────────────────────────────── */
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24">
@@ -66,141 +122,142 @@ export default function RegisterPage() {
       {/* ══ LEFT PANEL — 60% ═════════════════════════════════════════════════ */}
       <div style={{
         width: '60%', flexShrink: 0,
-        background: 'linear-gradient(135deg, #FFE4D6 0%, #FECDB8 100%)',
+        background: 'linear-gradient(150deg, #FFF4EE 0%, #FFE8D8 55%, #FFD9C4 100%)',
         display: 'flex', flexDirection: 'column',
-        padding: '28px 36px',
-        overflow: 'hidden',
+        padding: '28px 56px 28px 56px',
+        overflow: 'hidden', position: 'relative',
+        gap: '0',
       }}>
+
+        {/* Decorative background circles */}
+        <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: '320px', height: '320px', borderRadius: '50%', background: 'rgba(255,107,53,0.06)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '80px', left: '-60px', width: '240px', height: '240px', borderRadius: '50%', background: 'rgba(255,107,53,0.05)', pointerEvents: 'none' }} />
+
         {/* Brand */}
-        <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0, zIndex: 10 }}>
-          <img src="/logo.jpg" alt="Namma Trip" style={{ width: '36px', height: '36px', borderRadius: '10px', objectFit: 'cover', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }} />
-          <span style={{ fontSize: '17px', fontWeight: 800, color: '#FF6B35' }}>Namma Trip</span>
-        </Link>
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+            <img src="/logo.jpg" alt="Namma Trip" style={{ width: '34px', height: '34px', borderRadius: '10px', objectFit: 'cover', boxShadow: '0 2px 10px rgba(0,0,0,0.12)' }} />
+            <span style={{ fontSize: '17px', fontWeight: 800, color: '#FF6B35' }}>Namma Trip</span>
+          </Link>
+        </motion.div>
 
-        {/* Collage */}
-        <div style={{ flex: 1, position: 'relative', marginTop: '20px', overflow: 'hidden' }}>
+        {/* Headline */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          style={{ marginTop: '20px' }}
+        >
+          <h1 style={{ fontSize: '34px', fontWeight: 900, color: '#0F172A', lineHeight: 1.15, margin: '0 0 12px', maxWidth: '460px' }}>
+            Start Your<br />
+            <span style={{ color: '#FF6B35' }}>Journey</span> Today
+          </h1>
+          <div style={{ width: '48px', height: '4px', borderRadius: '2px', background: 'linear-gradient(90deg, #FF6B35, #FF9A71)', marginBottom: '10px' }} />
+          <p style={{ fontSize: '13px', color: '#4B5563', lineHeight: 1.65, fontWeight: 500, margin: 0, maxWidth: '420px' }}>
+            Join thousands of travelers discovering Tamil Nadu through AI-powered travel planning, vibrant travel communities, and verified destinations.
+          </p>
+        </motion.div>
 
-          {/* ── Top-left: Meenakshi Temple ───────────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.65 }}
-            style={{
-              position: 'absolute', top: 0, left: 0,
-              width: '50%', height: '44%',
-              borderRadius: '18px', overflow: 'hidden',
-              boxShadow: '0 16px 40px rgba(0,0,0,0.16)',
-            }}
-          >
-            <img src="/meenakshi.jpg" alt="Meenakshi Temple" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </motion.div>
+        {/* Card Showcase */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', marginTop: '8px', marginBottom: '8px' }}>
 
-          {/* ── Top-right: Kodaikanal Lake ──────────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.65, delay: 0.08 }}
-            style={{
-              position: 'absolute', top: 0, right: 0,
-              width: '47%', height: '44%',
-              borderRadius: '18px', overflow: 'hidden',
-              boxShadow: '0 16px 40px rgba(0,0,0,0.16)',
-            }}
-          >
-            <img src="/kodaikanal.jpg" alt="Kodaikanal Lake" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          {/* Card Stack Container */}
+          <div style={{ position: 'relative', width: '240px', height: '300px' }}>
 
-            {/* 4.9/5 User Rating badge — floats inside image, top-right */}
+            {/* Card 3 — Kodaikanal (furthest back, left) */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.55 }}
+              initial={{ opacity: 0, x: -30, rotate: -10 }}
+              animate={{ opacity: 1, x: 0, rotate: -8 }}
+              transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
               style={{
-                position: 'absolute', top: '10px', right: '10px',
-                background: 'rgba(255,255,255,0.95)',
-                backdropFilter: 'blur(8px)',
-                borderRadius: '14px',
-                padding: '8px 14px',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.14)',
-                textAlign: 'center',
-                border: '1px solid rgba(255,255,255,0.8)',
+                position: 'absolute', top: 24, left: -52,
+                width: '100%', height: '100%',
+                borderRadius: '22px', overflow: 'hidden',
+                boxShadow: '0 8px 28px rgba(0,0,0,0.12)',
+                zIndex: 1,
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', justifyContent: 'center', marginBottom: '2px' }}>
-                <Star style={{ width: '13px', height: '13px', fill: '#FF6B35', color: '#FF6B35' }} />
-                <span style={{ fontSize: '15px', fontWeight: 800, color: '#111827' }}>4.9/5</span>
+              <img src="/kodaikanal.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Kodaikanal" />
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px 18px 16px', background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)' }}>
+                <div style={{ color: '#fff', fontSize: '15px', fontWeight: 700 }}>Kodaikanal Lake</div>
+                <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', fontWeight: 500 }}>Hill Station</div>
               </div>
-              <div style={{ fontSize: '10px', color: '#6B7280', fontWeight: 600, letterSpacing: '0.02em' }}>User Rating</div>
             </motion.div>
-          </motion.div>
 
-          {/* ── Bottom-left: Ooty Hills ─────────────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.65, delay: 0.12 }}
-            style={{
-              position: 'absolute', top: '47%', left: 0,
-              width: '50%', height: '32%',
-              borderRadius: '18px', overflow: 'hidden',
-              boxShadow: '0 12px 32px rgba(0,0,0,0.14)',
-            }}
-          >
-            <img src="/ooty.jpg" alt="Ooty Hills" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-
-            {/* 1,240+ Active Trips badge — bottom-left inside Ooty image */}
+            {/* Card 2 — Ooty (middle, right offset) */}
             <motion.div
-              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.62 }}
+              initial={{ opacity: 0, x: 30, rotate: 8 }}
+              animate={{ opacity: 1, x: 0, rotate: 5 }}
+              transition={{ duration: 0.9, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
               style={{
-                position: 'absolute', bottom: '10px', left: '10px',
-                background: 'rgba(255,255,255,0.95)',
-                backdropFilter: 'blur(8px)',
-                borderRadius: '12px',
-                padding: '7px 12px',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.14)',
-                border: '1px solid rgba(255,255,255,0.8)',
+                position: 'absolute', top: 14, left: 48,
+                width: '100%', height: '100%',
+                borderRadius: '22px', overflow: 'hidden',
+                boxShadow: '0 12px 36px rgba(0,0,0,0.15)',
+                zIndex: 2,
               }}
             >
-              <div style={{ fontSize: '9px', fontWeight: 700, color: '#FF6B35', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '2px' }}>
-                Active Trips
+              <img src="/ooty.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Ooty" />
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px 18px 16px', background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)' }}>
+                <div style={{ color: '#fff', fontSize: '15px', fontWeight: 700 }}>Ooty Hills</div>
+                <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', fontWeight: 500 }}>The Nilgiris</div>
               </div>
-              <div style={{ fontSize: '17px', fontWeight: 800, color: '#111827', lineHeight: 1 }}>1,240+</div>
             </motion.div>
-          </motion.div>
 
-          {/* ── Bottom-right: Weekends image ────────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.65, delay: 0.16 }}
-            style={{
-              position: 'absolute', top: '47%', right: 0,
-              width: '47%', height: '32%',
-              borderRadius: '18px', overflow: 'hidden',
-              boxShadow: '0 12px 32px rgba(0,0,0,0.14)',
-            }}
-          >
-            <img src="/weekends.png" alt="Weekend Getaway" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </motion.div>
+            {/* Card 1 — Meenakshi (front, floating) */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: [0, -7, 0] }}
+              transition={{
+                opacity: { duration: 0.7, delay: 0.35 },
+                y: { duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 },
+              }}
+              whileHover={{ scale: 1.03 }}
+              style={{
+                position: 'absolute', top: 0, left: 0,
+                width: '100%', height: '100%',
+                borderRadius: '22px', overflow: 'hidden',
+                boxShadow: '0 20px 52px rgba(0,0,0,0.22)',
+                zIndex: 3,
+                border: '1.5px solid rgba(255,255,255,0.25)',
+                cursor: 'default',
+              }}
+            >
+              <img src="/meenakshi.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Meenakshi Temple" />
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px 20px 20px', background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%)' }}>
+                <div style={{ color: '#fff', fontSize: '18px', fontWeight: 800, marginBottom: '4px' }}>Meenakshi Temple</div>
+                <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '12px', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                  Madurai, Tamil Nadu
+                </div>
+              </div>
+            </motion.div>
 
-          {/* ── White content card — bottom, below all images ───────────── */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.28 }}
-            style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0,
-              background: 'rgba(255,255,255,0.95)',
-              backdropFilter: 'blur(16px)',
-              borderRadius: '20px',
-              padding: '18px 24px',
-              boxShadow: '0 20px 56px rgba(0,0,0,0.12)',
-              border: '1px solid rgba(255,255,255,0.8)',
-              zIndex: 10,
-            }}
-          >
-            <h2 style={{ fontSize: '22px', fontWeight: 900, color: '#111827', lineHeight: 1.2, marginBottom: '6px' }}>
-              Start Your Journey Today
-            </h2>
-            <p style={{ fontSize: '12px', color: '#6B7280', fontWeight: 500, lineHeight: 1.6, margin: 0, maxWidth: '480px' }}>
-              Join thousands of travelers discovering the hidden beauty of Tamil Nadu. From the misty hills of Kodaikanal to the majestic temples of Madurai, your curated adventure begins here.
-            </p>
-          </motion.div>
+            {/* Glass Badges */}
+            <GlassBadge icon="⭐" label="4.8 Rating" sub="Traveler Satisfaction" style={{ top: '-20px', right: '-100px' }} delay={0.6} />
+            <GlassBadge icon="🤖" label="AI Trip Planning" sub="Smart Itineraries" style={{ top: '80px', left: '-130px' }} delay={0.7} />
+            <GlassBadge icon="📍" label="Verified Destinations" sub="Trusted Reviews" style={{ bottom: '80px', right: '-115px' }} delay={0.8} />
+            <GlassBadge icon="👥" label="1,000+ Explorers" sub="Active Community" style={{ bottom: '10px', left: '-110px' }} delay={0.9} />
+
+          </div>
         </div>
+
+        {/* Bottom Feature Cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          style={{ display: 'flex', gap: '12px', flexShrink: 0 }}
+        >
+          <FeatureCard icon="🤖" title="AI Powered Planning" desc="Create personalized itineraries instantly." delay={0.6} />
+          <FeatureCard icon="👥" title="Travel Community" desc="Connect with like-minded travelers." delay={0.7} />
+          <FeatureCard icon="🛡" title="Verified Experiences" desc="Discover trusted destinations and local insights." delay={0.8} />
+        </motion.div>
+
       </div>
 
       {/* ══ RIGHT PANEL — 40% ════════════════════════════════════════════════ */}
@@ -268,33 +325,37 @@ export default function RegisterPage() {
               />
             </div>
 
-            {/* Password — full width */}
-            <div style={{ marginBottom: '12px' }}>
-              <label style={lbl}>Password</label>
-              <div style={{ position: 'relative' }}>
-                <input id="register-password" type={showPw ? 'text' : 'password'} value={password}
-                  onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required style={inp}
-                  onFocus={(e) => e.target.style.borderColor = '#FF6B35'}
-                  onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
-                />
-                <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', display: 'flex', padding: 0 }}>
-                  {showPw ? <EyeOff style={{ width: '16px', height: '16px' }} /> : <Eye style={{ width: '16px', height: '16px' }} />}
-                </button>
+            {/* Password + Confirm — side by side */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+              {/* Password */}
+              <div>
+                <label style={lbl}>Password</label>
+                <div style={{ position: 'relative' }}>
+                  <input id="register-password" type={showPw ? 'text' : 'password'} value={password}
+                    onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required
+                    style={{ ...inp, padding: '0 36px 0 12px' }}
+                    onFocus={(e) => e.target.style.borderColor = '#FF6B35'}
+                    onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
+                  />
+                  <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', display: 'flex', padding: 0 }}>
+                    {showPw ? <EyeOff style={{ width: '15px', height: '15px' }} /> : <Eye style={{ width: '15px', height: '15px' }} />}
+                  </button>
+                </div>
               </div>
-            </div>
-
-            {/* Confirm Password — full width, stacked */}
-            <div style={{ marginBottom: '12px' }}>
-              <label style={lbl}>Confirm Password</label>
-              <div style={{ position: 'relative' }}>
-                <input id="register-confirm" type={showCf ? 'text' : 'password'} value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)} placeholder="••••••••" required style={inp}
-                  onFocus={(e) => e.target.style.borderColor = '#FF6B35'}
-                  onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
-                />
-                <button type="button" onClick={() => setShowCf(!showCf)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', display: 'flex', padding: 0 }}>
-                  {showCf ? <EyeOff style={{ width: '16px', height: '16px' }} /> : <Eye style={{ width: '16px', height: '16px' }} />}
-                </button>
+              {/* Confirm */}
+              <div>
+                <label style={{ ...lbl }}>Confirm</label>
+                <div style={{ position: 'relative' }}>
+                  <input id="register-confirm" type={showCf ? 'text' : 'password'} value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)} placeholder="••••••••" required
+                    style={{ ...inp, padding: '0 36px 0 12px' }}
+                    onFocus={(e) => e.target.style.borderColor = '#FF6B35'}
+                    onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
+                  />
+                  <button type="button" onClick={() => setShowCf(!showCf)} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', display: 'flex', padding: 0 }}>
+                    {showCf ? <EyeOff style={{ width: '15px', height: '15px' }} /> : <Eye style={{ width: '15px', height: '15px' }} />}
+                  </button>
+                </div>
               </div>
             </div>
 

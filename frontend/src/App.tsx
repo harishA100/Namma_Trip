@@ -3,7 +3,7 @@ import { useAuth } from './context/AuthContext';
 import Layout from './components/layout/Layout';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import HomePage from './pages/HomePage';
+import CommunityFeedPage from './pages/CommunityFeedPage';
 import TripPlannerPage from './pages/TripPlannerPage';
 import ActiveTripPage from './pages/ActiveTripPage';
 import ExplorePage from './pages/ExplorePage';
@@ -14,7 +14,7 @@ import LandingPage from './pages/LandingPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, loading } = useAuth();
-  if (loading) return <div className="flex items-center justify-center min-h-screen"><div className="skeleton w-8 h-8 rounded-full" /></div>;
+  if (loading) return <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'100vh' }}><div style={{ width:32, height:32, borderRadius:'50%', border:'3px solid #FF6B35', borderTopColor:'transparent', animation:'spin 0.8s linear infinite' }} /></div>;
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
 }
 
@@ -27,10 +27,12 @@ export default function App() {
       <Route path="/" element={isAuthenticated ? <Navigate to="/feed" /> : <LandingPage />} />
       <Route path="/login" element={isAuthenticated ? <Navigate to="/feed" /> : <LoginPage />} />
       <Route path="/register" element={isAuthenticated ? <Navigate to="/feed" /> : <RegisterPage />} />
-      
-      {/* Authenticated Application Shell */}
+
+      {/* Community Feed — standalone layout (has its own sidebar/header) */}
+      <Route path="/feed" element={<ProtectedRoute><CommunityFeedPage /></ProtectedRoute>} />
+
+      {/* Other authenticated pages — use old Layout shell */}
       <Route path="/feed" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-        <Route index element={<HomePage />} />
         <Route path="planner" element={<TripPlannerPage />} />
         <Route path="trip/:id" element={<ActiveTripPage />} />
         <Route path="explore" element={<ExplorePage />} />

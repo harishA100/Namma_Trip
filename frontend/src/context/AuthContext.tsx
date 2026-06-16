@@ -34,8 +34,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
+    /*
+    // REAL BACKEND CALL:
     const response = await authApi.login({ email, password });
     const { token: newToken, user: newUser } = response.data.data;
+    */
+
+    // MOCK DATA IMPLEMENTATION:
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const newToken = 'mock_jwt_token_12345';
+    const newUser = { id: '1', name: 'Test Explorer', email, role: 'USER' } as any;
+
     setToken(newToken);
     setUser(newUser);
     localStorage.setItem('namma_token', newToken);
@@ -43,8 +52,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (name: string, email: string, password: string) => {
+    /*
+    // REAL BACKEND CALL:
     const response = await authApi.register({ name, email, password });
     const { token: newToken, user: newUser } = response.data.data;
+    */
+
+    // MOCK DATA IMPLEMENTATION:
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const newToken = 'mock_jwt_token_12345';
+    const newUser = { id: '1', name, email, role: 'USER' } as any;
+
     setToken(newToken);
     setUser(newUser);
     localStorage.setItem('namma_token', newToken);

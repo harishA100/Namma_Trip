@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Eye, EyeOff, Loader2, Star, MapPin, Navigation, Users } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-/* ── Reusable Google SVG ──────────────────────────────────────────────────── */
+/* ── Google / Facebook SVGs ─────────────────────────────────────────────── */
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24">
     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
@@ -19,50 +19,19 @@ const FacebookIcon = () => (
   </svg>
 );
 
-/* ── Shared floating pill ─────────────────────────────────────────────────── */
-const Pill = ({ icon: Icon, label, delay }: { icon: any; label: string; delay: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 8, scale: 0.9 }}
-    animate={{ opacity: 1, y: 0, scale: 1 }}
-    transition={{ duration: 0.5, delay }}
-    style={{
-      display: 'inline-flex', alignItems: 'center', gap: '7px',
-      background: 'rgba(255,255,255,0.95)',
-      backdropFilter: 'blur(10px)',
-      borderRadius: '999px',
-      padding: '8px 14px',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
-      whiteSpace: 'nowrap',
-      border: '1px solid rgba(255,255,255,0.8)',
-    }}
-  >
-    <Icon style={{ width: '13px', height: '13px', color: '#FF6B35', flexShrink: 0, fill: Icon === Star ? '#FF6B35' : 'none' }} />
-    <span style={{ fontSize: '12px', fontWeight: 700, color: '#111827' }}>{label}</span>
-  </motion.div>
-);
-
-/* ── Shared input ─────────────────────────────────────────────────────────── */
-const Input = ({
-  id, type, value, onChange, placeholder, required, rightEl, onFocus, onBlur,
-}: {
-  id: string; type: string; value: string; onChange: (e: any) => void;
-  placeholder: string; required?: boolean; rightEl?: React.ReactNode;
-  onFocus?: (e: any) => void; onBlur?: (e: any) => void;
-}) => (
+/* ── Input ───────────────────────────────────────────────────────────────── */
+const Input = ({ id, type, value, onChange, placeholder, required, rightEl }: any) => (
   <div style={{ position: 'relative' }}>
-    <input
-      id={id} type={type} value={value} onChange={onChange}
-      placeholder={placeholder} required={required}
+    <input id={id} type={type} value={value} onChange={onChange} placeholder={placeholder} required={required}
       style={{
-        width: '100%', height: '50px', boxSizing: 'border-box',
-        border: '1.5px solid #E5E7EB', borderRadius: '12px',
-        padding: rightEl ? '0 44px 0 16px' : '0 16px',
-        fontSize: '14px', color: '#111827', outline: 'none',
-        background: '#fff', transition: 'border-color 0.2s',
-        fontFamily: 'inherit',
+        width: '100%', height: '48px', borderRadius: '12px',
+        border: '1.5px solid #E5E7EB', background: '#F9FAFB',
+        padding: '0 44px 0 16px', fontSize: '14px', color: '#111827',
+        outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
+        transition: 'border-color 0.2s, background 0.2s',
       }}
-      onFocus={(e) => { e.target.style.borderColor = '#FF6B35'; onFocus?.(e); }}
-      onBlur={(e) => { e.target.style.borderColor = '#E5E7EB'; onBlur?.(e); }}
+      onFocus={(e) => { e.target.style.borderColor = '#FF6B35'; e.target.style.background = '#fff'; }}
+      onBlur={(e) => { e.target.style.borderColor = '#E5E7EB'; e.target.style.background = '#F9FAFB'; }}
     />
     {rightEl && (
       <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center' }}>
@@ -72,36 +41,133 @@ const Input = ({
   </div>
 );
 
-/* ── Shared social buttons ────────────────────────────────────────────────── */
+/* ── Social row ──────────────────────────────────────────────────────────── */
 const SocialRow = () => (
   <div style={{ display: 'flex', gap: '12px' }}>
-    {[
-      { icon: <GoogleIcon />, label: 'Google' },
-      { icon: <FacebookIcon />, label: 'Facebook' },
-    ].map(({ icon, label }) => (
+    {[{ icon: <GoogleIcon />, label: 'Google' }, { icon: <FacebookIcon />, label: 'Facebook' }].map(({ icon, label }) => (
       <button key={label} type="button" style={{
-        flex: 1, height: '48px', border: '1.5px solid #E5E7EB', borderRadius: '12px',
+        flex: 1, height: '46px', borderRadius: '12px', border: '1.5px solid #E5E7EB',
         background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-        fontSize: '13px', fontWeight: 700, color: '#374151', cursor: 'pointer',
-        transition: 'border-color 0.2s, box-shadow 0.2s', fontFamily: 'inherit',
+        fontSize: '14px', fontWeight: 600, color: '#374151', cursor: 'pointer',
+        transition: 'border-color 0.2s, background 0.2s', fontFamily: 'inherit',
       }}
-        onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#D1D5DB'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; }}
+        onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#FF6B35'; e.currentTarget.style.background = '#FFF8F5'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.background = '#fff'; }}
       >
-        {icon}{label}
+        {icon} {label}
       </button>
     ))}
   </div>
 );
 
-/* ── Divider ──────────────────────────────────────────────────────────────── */
+/* ── Divider ─────────────────────────────────────────────────────────────── */
 const Divider = () => (
   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
     <div style={{ flex: 1, height: '1px', background: '#F3F4F6' }} />
-    <span style={{ fontSize: '11px', fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>
-      OR CONTINUE WITH
-    </span>
+    <span style={{ fontSize: '11px', fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>OR CONTINUE WITH</span>
     <div style={{ flex: 1, height: '1px', background: '#F3F4F6' }} />
+  </div>
+);
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LEFT PANEL — Instagram-Style Stories Showcase
+══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Feature Panel ───────────────────────────────────────────────────────── */
+const FeatureRow = ({ emoji, title, desc, delay }: any) => (
+  <motion.div
+    initial={{ opacity: 0, x: -10 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ delay, duration: 0.5 }}
+    style={{
+      display: 'flex', alignItems: 'flex-start', gap: '14px',
+      padding: '12px 0',
+      cursor: 'default',
+    }}
+  >
+    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#fff', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
+      {emoji}
+    </div>
+    <div>
+      <div style={{ fontSize: '15px', fontWeight: 700, color: '#111827', marginBottom: '3px' }}>{title}</div>
+      <div style={{ fontSize: '13px', color: '#6B7280', lineHeight: 1.4 }}>{desc}</div>
+    </div>
+  </motion.div>
+);
+
+/* ── Stories Data ────────────────────────────────────────────────────────── */
+const STORIES = [
+  {
+    id: 'ai',
+    bg: '/kodaikanal.jpg',
+    badge: '✨ AI TRIP PLANNER',
+    title: 'Smart Itineraries',
+    desc: 'Get personalized travel plans in seconds based on your preferences.',
+    cta: 'Try AI Planner'
+  },
+  {
+    id: 'companion',
+    bg: '/beach.png',
+    badge: '💕 TRAVEL MATCH',
+    title: 'Find Companions',
+    desc: 'Connect with like-minded travelers heading to the same destination.',
+    cta: 'Find a Match'
+  },
+  {
+    id: 'community',
+    bg: '/weekends.png',
+    badge: '🌟 COMMUNITY',
+    title: 'Travel Stories',
+    desc: 'Join exclusive group trips and discover hidden gems together.',
+    cta: 'Join Community'
+  },
+  {
+    id: 'destinations',
+    bg: '/meenakshi.jpg',
+    badge: '📍 DESTINATIONS',
+    title: 'Hidden Gems',
+    desc: 'Experience the architectural marvels and spiritual heart of Tamil Nadu.',
+    cta: 'Explore Now'
+  },
+  {
+    id: 'food',
+    bg: '/food.png',
+    badge: '🍽️ FOOD DISCOVERY',
+    title: 'Local Experiences',
+    desc: 'Savor authentic South Indian cuisine and discover local eateries.',
+    cta: 'Discover Food'
+  }
+];
+
+const StoryCard = ({ story }: { story: typeof STORIES[0] }) => (
+  <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+    <img src={story.bg} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+    
+    {/* Gradients for readability */}
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '40%', background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%)' }} />
+    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '60%', background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)' }} />
+    
+    {/* Story progress bar (visual only) */}
+    <div style={{ position: 'absolute', top: '12px', left: '16px', right: '16px', display: 'flex', gap: '6px' }}>
+      {[0,1,2].map(i => (
+        <div key={i} style={{ height: '3px', flex: 1, borderRadius: '999px', background: i === 0 ? '#fff' : 'rgba(255,255,255,0.3)' }} />
+      ))}
+    </div>
+
+    {/* Badge */}
+    <div style={{ position: 'absolute', top: '28px', left: '20px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.3)', padding: '6px 12px', borderRadius: '999px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+      <span style={{ fontSize: '13px', fontWeight: 700, color: '#fff' }}>{story.badge}</span>
+    </div>
+
+    {/* Content */}
+    <div style={{ position: 'absolute', bottom: '32px', left: '24px', right: '24px' }}>
+      <h3 style={{ fontSize: '26px', fontWeight: 800, color: '#fff', margin: '0 0 8px', lineHeight: 1.1 }}>{story.title}</h3>
+      <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.85)', margin: '0 0 20px', lineHeight: 1.4, fontWeight: 500 }}>{story.desc}</p>
+      
+      <div style={{ width: '100%', height: '48px', background: '#FF6B35', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', fontWeight: 700, color: '#fff' }}>
+        {story.cta}
+      </div>
+    </div>
   </div>
 );
 
@@ -117,6 +183,15 @@ export default function LoginPage() {
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  const [activeCard, setActiveCard] = useState(0);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+    const t = setInterval(() => setActiveCard(p => (p + 1) % STORIES.length), 4000);
+    return () => clearInterval(t);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,132 +201,116 @@ export default function LoginPage() {
     finally { setLoading(false); }
   };
 
-  return (
-    <div style={{
-      height: '100vh', width: '100vw', display: 'flex', overflow: 'hidden',
-      background: '#F8F4F1', fontFamily: "'Inter', system-ui, sans-serif",
-    }}>
+  /* Get position styles based on offset from active card */
+  const getCardStyle = (offset: number) => {
+    switch (offset) {
+      case 0: // Front
+        return { x: 0, scale: 1, zIndex: 50, opacity: 1 };
+      case 1: // Second (behind)
+        return { x: 40, scale: 0.92, zIndex: 40, opacity: 1 };
+      case 2: // Third (further behind)
+        return { x: 80, scale: 0.84, zIndex: 30, opacity: 1 };
+      case 3: // Hidden back
+        return { x: 80, scale: 0.84, zIndex: 20, opacity: 0 };
+      case 4: // Moving from front to back (swings to the right)
+        return hasMounted ? {
+          x: [0, 320, 80],
+          scale: [1, 0.9, 0.84],
+          zIndex: [50, 20, 20],
+          opacity: [1, 1, 0] // Fades out as it goes behind
+        } : { x: 80, scale: 0.84, zIndex: 20, opacity: 0 };
+      default:
+        return { x: 80, scale: 0.84, zIndex: 10, opacity: 0 };
+    }
+  };
 
-      {/* ══ LEFT PANEL — 60% ═════════════════════════════════════════════════ */}
+  return (
+    <div style={{ height: '100vh', width: '100vw', display: 'flex', overflow: 'hidden', fontFamily: "'Inter', system-ui, sans-serif" }}>
+
+      {/* ══ LEFT PANEL — Animated Product Showcase ══════════════════════════ */}
       <div style={{
         width: '60%', flexShrink: 0,
-        background: 'linear-gradient(135deg, #FFE4D6 0%, #FECDB8 100%)',
+        background: 'linear-gradient(145deg, #FFE4D6 0%, #FFD0B8 60%, #FECDB8 100%)',
         display: 'flex', flexDirection: 'column',
-        padding: '28px 36px',
-        overflow: 'hidden',
-        position: 'relative',
+        padding: '24px 32px', overflow: 'hidden', position: 'relative',
       }}>
         {/* Brand */}
         <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0, zIndex: 10, position: 'relative' }}>
-          <img src="/logo.jpg" alt="Namma Trip" style={{ width: '36px', height: '36px', borderRadius: '10px', objectFit: 'cover', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }} />
+          <img src="/logo.jpg" alt="Namma Trip" style={{ width: '34px', height: '34px', borderRadius: '10px', objectFit: 'cover', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }} />
           <span style={{ fontSize: '17px', fontWeight: 800, color: '#FF6B35' }}>Namma Trip</span>
         </Link>
 
-        {/* Collage — fills remaining height, strictly overflow:hidden */}
-        <div style={{ flex: 1, position: 'relative', marginTop: '20px', overflow: 'hidden' }}>
+        {/* Showcase area */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '60px', position: 'relative', marginTop: '12px' }}>
 
-          {/* ── Temple image: top-left, dominant ────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.65 }}
-            style={{
-              position: 'absolute', top: 0, left: 0,
-              width: '54%', height: '52%',
-              borderRadius: '18px', overflow: 'hidden',
-              boxShadow: '0 16px 40px rgba(0,0,0,0.16)',
-            }}
-          >
-            <img src="/meenakshi.jpg" alt="Meenakshi Temple" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </motion.div>
-
-          {/* ── Ooty: top-right ──────────────────────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.65, delay: 0.08 }}
-            style={{
-              position: 'absolute', top: 0, right: 0,
-              width: '43%', height: '43%',
-              borderRadius: '18px', overflow: 'hidden',
-              boxShadow: '0 16px 40px rgba(0,0,0,0.16)',
-            }}
-          >
-            <img src="/ooty.jpg" alt="Ooty Hills" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </motion.div>
-
-          {/* ── Pills: float between the two images ─────────────────────── */}
-          {/* Rating pill — right of temple, top-right zone */}
-          <motion.div
-            initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.45 }}
-            style={{ position: 'absolute', top: '4%', left: '56%', zIndex: 20 }}
-          >
-            <Pill icon={Star} label="4.8 Rating" delay={0} />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.52 }}
-            style={{ position: 'absolute', top: '14%', left: '56%', zIndex: 20 }}
-          >
-            <Pill icon={MapPin} label="50+ Destinations" delay={0} />
-          </motion.div>
-
-          {/* ── Kodaikanal: bottom-right peek ───────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ duration: 0.65, delay: 0.15 }}
-            style={{
-              position: 'absolute', bottom: 0, right: 0,
-              width: '43%', height: '34%',
-              borderRadius: '18px', overflow: 'hidden',
-              boxShadow: '0 12px 32px rgba(0,0,0,0.14)',
-            }}
-          >
-            <img src="/kodaikanal.jpg" alt="Kodaikanal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </motion.div>
-
-          {/* Pills: AI & Travelers — between kodaikanal and content card */}
-          <motion.div
-            initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.58 }}
-            style={{ position: 'absolute', bottom: '37%', right: '45%', zIndex: 20 }}
-          >
-            <Pill icon={Navigation} label="AI Trip Planning" delay={0} />
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.64 }}
-            style={{ position: 'absolute', bottom: '24%', right: '45%', zIndex: 20 }}
-          >
-            <Pill icon={Users} label="1,000+ Travelers" delay={0} />
-          </motion.div>
-
-          {/* ── White glass card: bottom-left ───────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            style={{
-              position: 'absolute', bottom: 0, left: 0,
-              width: '53%', zIndex: 10,
-              background: 'rgba(255,255,255,0.94)',
-              backdropFilter: 'blur(16px)',
-              borderRadius: '22px',
-              padding: '22px 26px',
-              boxShadow: '0 20px 56px rgba(0,0,0,0.12)',
-              border: '1px solid rgba(255,255,255,0.8)',
-            }}
-          >
-            <h2 style={{ fontSize: '26px', fontWeight: 900, color: '#FF6B35', lineHeight: 1.15, marginBottom: '8px' }}>
-              Welcome<br />Back Explorer
+          {/* Left Text & Feature Column */}
+          <div style={{ width: '300px', display: 'flex', flexDirection: 'column' }}>
+            <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#111827', margin: '0 0 12px', lineHeight: 1.2 }}>
+              <span style={{ color: '#FF6B35' }}>Welcome Back</span> Explorer
             </h2>
-            <p style={{ fontSize: '13px', color: '#6B7280', fontWeight: 500, lineHeight: 1.6, margin: 0 }}>
-              Continue planning your next unforgettable Tamil Nadu journey. Your curated adventures await.
+            <p style={{ fontSize: '15px', color: '#6B7280', margin: '0 0 36px', fontWeight: 500, lineHeight: 1.5 }}>
+              Continue planning your next unforgettable Tamil Nadu journey.
             </p>
-          </motion.div>
+
+            <div style={{ fontSize: '12px', fontWeight: 800, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>
+              Why Travelers Love Namma Trip
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <FeatureRow emoji="⭐" title="4.8 Average Rating" desc="Trusted by thousands of travelers" delay={0.2} />
+              <FeatureRow emoji="📍" title="50+ Verified Destinations" desc="Explore authentic Tamil Nadu experiences" delay={0.4} />
+              <FeatureRow emoji="🤖" title="AI Trip Planning" desc="Generate itineraries instantly" delay={0.6} />
+              <FeatureRow emoji="👥" title="1,000+ Active Travelers" desc="Connect with local explorers" delay={0.8} />
+            </div>
+          </div>
+
+          {/* Right Cards Column */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 800, color: '#FF6B35', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
+                Feature Highlights
+              </div>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: '#111827' }}>
+                Travel smarter with AI-powered experiences.
+              </div>
+            </div>
+
+            {/* Card stack container */}
+          <div style={{ position: 'relative', width: '300px', height: '520px', zIndex: 10 }}>
+            {STORIES.map((story, index) => {
+              const offset = (index - activeCard + STORIES.length) % STORIES.length;
+              return (
+                <motion.div
+                  key={story.id}
+                  initial={false}
+                  animate={getCardStyle(offset)}
+                  transition={{ 
+                    duration: 0.8, 
+                    ease: "easeInOut", 
+                    times: offset === 4 ? [0, 0.5, 1] : undefined 
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: 0, left: 0,
+                    width: '300px', height: '520px',
+                    borderRadius: '28px',
+                    overflow: 'hidden',
+                    boxShadow: '0 24px 48px rgba(0,0,0,0.15)',
+                    transformOrigin: 'center center',
+                    border: '1px solid rgba(255,255,255,0.15)'
+                  }}
+                >
+                  <StoryCard story={story} />
+                </motion.div>
+              );
+            })}
+          </div>
+
         </div>
       </div>
+    </div>
 
-      {/* ══ RIGHT PANEL — 40% ════════════════════════════════════════════════ */}
+      {/* ══ RIGHT PANEL — Auth Card (unchanged) ════════════════════════════ */}
       <div style={{
         flex: 1, display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
@@ -300,7 +359,7 @@ export default function LoginPage() {
               </label>
               <Input
                 id="login-email" type="email" value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e: any) => setEmail(e.target.value)}
                 placeholder="explorer@nammatrip.com" required
                 rightEl={
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2">
@@ -318,7 +377,7 @@ export default function LoginPage() {
               </div>
               <Input
                 id="login-password" type={showPw ? 'text' : 'password'}
-                value={password} onChange={(e) => setPassword(e.target.value)}
+                value={password} onChange={(e: any) => setPassword(e.target.value)}
                 placeholder="••••••••" required
                 rightEl={
                   <button type="button" onClick={() => setShowPw(!showPw)}
